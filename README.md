@@ -20,7 +20,7 @@ Each call uses a maximum of 150 input tokens. Based on this, 25,000 MP3 calls wo
 - **Directory Selection**: Select and load entire directories of MP3 files.
 - **Integration with Mutagen**: Save tags directly to your MP3 files using the Mutagen library.
 - **Web Interface**: Simple and intuitive web-based interface for managing your music library.
-- **Play MP3**: Double-click on any row to play the MP3 file.
+- **Play MP3**: Double-click the file name to play the MP3 file.
 
 ## Getting Started
 
@@ -63,10 +63,12 @@ Bug: Large number of MP3 files might cause issues.
 After loading the directory, select the files you want to auto-tag.
 Click on the "Auto Tag" button to start the tagging process (Batch Button).
 If you have Artist - Title, it will search from that; if missing, it will search using the file name.
+Even with the option do not overwrite - it still over writes
 
 Editing Tags Manually
 Select a row in the table to enable the edit menu.
 Edit the artist, title, genre, album, and year fields as needed.
+Will work on adding more genres.
 
 ### Playing MP3 Files
 Double-click on any row in the table to play the corresponding MP3 file (over the file name).
