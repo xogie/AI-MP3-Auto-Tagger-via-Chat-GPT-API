@@ -60,10 +60,10 @@ Choose the directory containing your MP3 files.
 Bug: Large number of MP3 files might cause issues.
 
 ### Auto-Tagging Files
-After loading the directory, select the files you want to auto-tag.
-Click on the "Auto Tag" button to start the tagging process (Batch Button).
+After loading the directory, select the batch button you want to auto-tag.
+Click on the "Auto Tag" button to start the tagging process.
 If you have Artist - Title, it will search from that; if missing, it will search using the file name.
-Even with the option do not overwrite - it still over writes
+Even with the option do not overwrite - it still over writes tags, you have been warned. 
 
 Editing Tags Manually
 Select a row in the table to enable the edit menu.
