@@ -81,15 +81,7 @@ Known Issues and Work in Progress
 
     Testing: Ensure you thoroughly test the application with your files. Changes to metadata can be permanent.
     Enhancements: Additional features and improvements are planned. Fingerprinting, and maybe some extra lookups
-    Bug Fixes: Addressing bugs and improving error handling.
-    Rows will be highlighted in green during processing and light green once processed.
-    Error when deleting files. 
-    I am sure I have a few more. 
-    This is not my day job. This is a work in progress, use at your own risk. 
-    Album art in the edit window is broken (again).
-    Sorting columns does not work correctly
-    Most of the options in the folders do not work. 
-        
+   
 
 Contributing
 
