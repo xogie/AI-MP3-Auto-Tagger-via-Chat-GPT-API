@@ -8,7 +8,7 @@ https://buymeacoffee.com/gitxogie
 ---
 AI MP3 Auto Tagger via Chat GPT API
 
-AI MP3 Auto Tagger via Chat GPT API is a tool designed to automate the process of tagging MP3 files using artificial intelligence. By leveraging the capabilities of OpenAI's GPT models, this application can accurately tag your music files with metadata such as artist, title, genre, album, and year. It includes features for batch processing, directory selection, and manual editing, ensuring your music library is well-organized with minimal effort. You can also play and edits tags right from your browser. This has bugs, you should test and save your MP3 files in a testing folder. This is a work in progress. 
+AI MP3 Auto Tagger via Chat GPT API is a tool designed to automate the process of tagging MP3 files using artificial intelligence. By leveraging the capabilities of OpenAI's GPT models, this application can accurately tag your music files with metadata such as artist, title, genre, album, and year. It includes features for batch processing, directory selection, and manual editing, ensuring your music library is well-organized with minimal effort. You can also play and edits tags right from your browser. This has bugs, you should test and save your MP3 files in a testing folder. This is a work in progress. Each call uses 150 max input tokens, so if I can math today, 25,000 mp3 calls would be $0.5625 (I think).
 
 Key Features
 
