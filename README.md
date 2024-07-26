@@ -33,7 +33,6 @@ Each call uses a maximum of 150 input tokens. Based on this, 25,000 MP3 calls wo
 
 ### Installation
 Clone the repository:
-
 git clone https://github.com/xogie/AI-MP3-Auto-Tagger-via-Chat-GPT-API.git
 cd AI-MP3-Auto-Tagger-via-Chat-GPT-API
 
