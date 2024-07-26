@@ -32,10 +32,9 @@ Each call uses a maximum of 150 input tokens. Based on this, 25,000 MP3 calls wo
 - *Install required python modules. I'll work on finishing a requirements.txt file. 
 
 ### Installation
-Clone the repository:
-git clone https://github.com/xogie/AI-MP3-Auto-Tagger-via-Chat-GPT-API.git
-
-cd AI-MP3-Auto-Tagger-via-Chat-GPT-API
+- Clone the repository:
+- git clone https://github.com/xogie/AI-MP3-Auto-Tagger-via-Chat-GPT-API.git
+- cd AI-MP3-Auto-Tagger-via-Chat-GPT-API
 
 
 ### Setup
@@ -48,42 +47,42 @@ Configure your settings:
     Open the settings and enter your OpenAI API key.
 
 Running the Application
-python main.py
+- python main.py
 
 Open your browser and navigate to:
-http://127.0.0.1:5555
+- http://127.0.0.1:5555
 
 ### Usage
-Selecting a Directory
-Click on the "Select Directory" button.
-Choose the directory containing your MP3 files.
+- Selecting a Directory
+- Click on the "Select Directory" button.
+- Choose the directory containing your MP3 files.
 Bug: Large number of MP3 files might cause issues.
 
 ### Auto-Tagging Files
-After loading the directory, select the batch button you want to auto-tag.
-Click on the "Auto Tag" button to start the tagging process.
-If you have Artist - Title, it will search from that; if missing, it will search using the file name.
-Even with the option do not overwrite - it still over writes tags, you have been warned. 
+- After loading the directory, select the batch button you want to auto-tag.
+- Click on the "Auto Tag" button to start the tagging process.
+- If you have Artist - Title, it will search from that; if missing, it will search using the file name.
+- Even with the option do not overwrite - it still over writes tags, you have been warned. 
 
 Editing Tags Manually
-Select a row in the table to enable the edit menu.
-Edit the artist, title, genre, album, and year fields as needed.
-Will work on adding more genres.
+- Select a row in the table to enable the edit menu.
+- Edit the artist, title, genre, album, and year fields as needed.
+- Will work on adding more genres.
 
 ### Playing MP3 Files
-Double-click on any row in the table to play the corresponding MP3 file (over the file name).
+- Double-click on any row in the table to play the corresponding MP3 file (over the file name).
 Known Issues and Work in Progress
 
 ### Testing: Ensure you thoroughly test the application with your files. Changes to metadata can be permanent.
-Enhancements: Additional features and improvements are planned. Fingerprinting, and maybe some extra lookups.
+- Enhancements: Additional features and improvements are planned. Fingerprinting, and maybe some extra lookups.
 
 ### Contributing
-Fork the repository.
-Create a new branch (git checkout -b feature-branch).
-Make your changes.
-Commit your changes (git commit -m 'Add some feature').
-Push to the branch (git push origin feature-branch).
-Open a Pull Request.
+- Fork the repository.
+- Create a new branch (git checkout -b feature-branch).
+- Make your changes.
+- Commit your changes (git commit -m 'Add some feature').
+- Push to the branch (git push origin feature-branch).
+- Open a Pull Request.
 
 AI MP3 Auto Tagger via Chat GPT API
 
