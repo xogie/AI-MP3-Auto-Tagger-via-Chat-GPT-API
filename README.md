@@ -103,4 +103,5 @@ Contributing
     # AI MP3 Auto Tagger via Chat GPT API
 
 <a href="https://ibb.co/YhCM8vD"><img src="https://i.ibb.co/YhCM8vD/image.png" alt="image" border="0"></a>
+
 This is a work in progress tool that will change your metadata for your MP3 files using the OpenAI Chat GPT API.
