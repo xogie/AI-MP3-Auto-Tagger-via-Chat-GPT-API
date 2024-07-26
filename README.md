@@ -73,7 +73,8 @@ Editing Tags Manually
 - Double-click on any row in the table to play the corresponding MP3 file (over the file name).
 Known Issues and Work in Progress
 
-### Testing: Ensure you thoroughly test the application with your files. Changes to metadata can be permanent.
+### Testing: 
+- Ensure you thoroughly test the application with your backed up files. Changes to metadata can be permanent.
 - Enhancements: Additional features and improvements are planned. Fingerprinting, and maybe some extra lookups.
 
 ### Contributing
