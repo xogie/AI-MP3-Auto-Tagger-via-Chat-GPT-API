@@ -1,5 +1,5 @@
 # AI-MP3-Auto-Tagger-via-Chat-GPT-API
-AI MP3 Auto Tagger via Chat GPT API is a tool designed to automate the process of tagging MP3 files using artificial intelligence. 
+AI MP3 Auto Tagger via Chat GPT API is a tool designed to automate the process of tagging MP3 files using artificial intelligence. You need a Chat GBT API Key to use the auto tagging. 
 
 If you like the direction of this project, please condsider supporting me and motivate me to finish. 
 https://buymeacoffee.com/gitxogie
