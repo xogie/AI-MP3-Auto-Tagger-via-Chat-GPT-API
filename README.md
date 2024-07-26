@@ -88,6 +88,7 @@ Known Issues and Work in Progress
     This is not my day job. This is a work in progress, use at your own risk. 
     Album art in the edit window is broken (again).
     Sorting columns does not work correctly
+    Most of the options in the folders do not work. 
         
 
 Contributing
