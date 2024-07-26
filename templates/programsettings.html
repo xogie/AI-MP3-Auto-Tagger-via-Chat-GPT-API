@@ -1,0 +1,23 @@
+<div id="settings-menu" class="settings-menu">
+    <div class="settings-header">
+        <h2>Settings</h2>
+        <button class="close-button">&times;</button>
+    </div>
+    <div class="settings-content">
+        <form id="settings-form">
+            <div class="form-group">
+                <label for="chat-gpt-api-key">Chat GPT API Key:</label>
+                <input type="text" id="chat-gpt-api-key" name="chat_gpt_api_key">
+            </div>
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="overwrite-existing-tags" name="overwrite_existing_tags">
+                <label for="overwrite-existing-tags">Overwrite Existing Tags</label>
+            </div>
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="condensed-genre" name="condensed_genre">
+                <label for="condensed-genre">Condensed Genre</label>
+            </div>
+            <button type="button" id="save-settings" class="button">Save</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI MP3 Tagger App</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.5.4/css/colReorder.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/colvis/1.1.2/css/dataTables.colVis.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/rowreorder/1.2.8/css/rowReorder.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.2.1/css/fixedHeader.dataTables.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/editmenu.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/oyoplayer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/batchmenu.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settingsmenu.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.9.2/jquery.contextMenu.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/colreorder/1.5.4/js/dataTables.colReorder.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/colvis/1.1.2/js/dataTables.colVis.js"></script>
+    <script src="https://cdn.datatables.net/rowreorder/1.2.8/js/dataTables.rowReorder.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/3.2.1/js/dataTables.fixedHeader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.9.2/jquery.contextMenu.min.js"></script>
+    <script src="{{ url_for('static', filename='js/ColReorderWithResize.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/editmenu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/settingsmenu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tagging.js') }}"></script>
+</head>
+<body>
+<header>
+    <div class="header-content">
+        <h3>AI MP3 Tagger App</h3>
+        <div class="menu-icons">
+            <button id="directory-button" class="button">Load Dir.</button>
+            <button id="batch-menu-icon" class="button">Batch</button>
+            <button id="hamburger-menu" class="button">Settings</button>
+        </div>
+    </div>
+</header>
+<div class="search-and-audio">
+    <audio id="audio-player" controls>
+        <source id="audio-source" src="" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+</div>
+<div id="program-messages" class="program-messages"></div>
+<main>
+    <div id="mp3_list">
+        <table id="mp3_table" class="display nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select-all"></th>
+                    <th>Artist</th>
+                    <th>Title</th>
+                    <th>Genre</th>
+                    <th>Album</th>
+                    <th>Year</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- MP3 files will be listed here -->
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<!-- Include the menus -->
+{% include 'editmenu.html' %}
+{% include 'programsettings.html' %}
+{% include 'batchmenu.html' %}
+</body>
+</html>

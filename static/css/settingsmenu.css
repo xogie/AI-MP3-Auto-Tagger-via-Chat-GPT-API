@@ -1,0 +1,109 @@
+.settings-menu {
+    position: fixed !important;
+    top: 0 !important;
+    right: -350px !important;
+    width: 350px !important;
+    height: 100% !important;
+    background-color: #333 !important;
+    color: #fff !important;
+    transition: right 0.3s !important;
+    z-index: 10000 !important; /* Ensure the menus are on top */
+}
+
+.settings-menu.open {
+    right: 0 !important;
+}
+
+.settings-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 10px !important;
+    background-color: #444 !important;
+    height: 54px !important;
+}
+
+.settings-header h2 {
+    margin: 0 !important;
+}
+
+.settings-header .close-button {
+    background: none !important;
+    border: none !important;
+    color: white !important;
+    font-size: 20px !important;
+    cursor: pointer !important;
+}
+
+.settings-content {
+    padding: 20px !important;
+}
+
+.form-section {
+    margin-bottom: 20px !important;
+}
+
+.form-section h3 {
+    margin: 0 0 10px 0 !important;
+    padding-bottom: 5px !important;
+    border-bottom: 1px solid #555 !important;
+}
+
+.form-group {
+    margin-bottom: 1rem !important;
+}
+
+.form-group label {
+    display: block !important;
+    margin-bottom: .5rem !important;
+}
+
+.form-group input,
+.form-group select {
+    width: 100% !important;
+    padding: .375rem .75rem !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+    color: #495057 !important;
+    background-color: #fff !important;
+    background-clip: padding-box !important;
+    border: 1px solid #ced4da !important;
+    border-radius: .25rem !important;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out !important;
+}
+
+.checkbox-group {
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: .5rem !important; /* Reduce margin to close gap */
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto !important;
+    margin-right: 5px !important; /* Reduce spacing between checkbox and label */
+}
+
+.checkbox-group label {
+    margin: 0 !important; /* Reset margin for proper alignment */
+    display: inline-block !important;
+}
+
+/* Button styles */
+.button {
+    margin: 1px;
+    padding: 4px 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px; /* Added for rounded corners */
+    text-align: center; /* Center the text */
+    font-size: 12px; /* Adjusted font size */
+    height: 25px; /* Set the desired height */
+    width: 100px; /* Set the desired width */
+    display: inline-block; /* Make sure buttons display inline */
+}
+
+.button:hover {
+    background-color: #0056b3;
+}

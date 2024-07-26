@@ -1,0 +1,420 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+}
+
+/* Header styles */
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+header .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 35px;
+}
+
+.hamburger-menu {
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.hamburger-menu span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px;
+    background-color: white;
+    transition: all 0.3s ease-in-out;
+}
+
+.menu-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.button {
+    margin: 1px;
+    padding: 4px 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px; /* Added for rounded corners */
+    text-align: center; /* Center the text */
+    font-size: 12px; /* Adjusted font size */
+    height: 25px; /* Set the desired height */
+    width: 100px; /* Set the desired width */
+    display: inline-block; /* Make sure buttons display inline */
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+/* Main content styles */
+main {
+    padding: 10px;
+    padding-top: 119px; /* Add space for fixed elements */
+    background-color: #35383b;
+}
+
+#directory-path, #search-box {
+    padding: 10px;
+    width: 200px;
+}
+
+.table-container {
+    max-height: 400px; 
+    overflow-y: auto;
+}
+
+#mp3_table {
+    width: 100%;
+    margin-top: 20px;
+}
+
+#program-messages {
+    background-color: #333; /* Match the background color */
+    color: Green;
+    padding: 10px;
+    text-align: center;
+    position: fixed;
+    top: 12px; /* Adjust based on the height of the player */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px; /* Set the desired width */
+    display: none;
+    z-index: 1000;
+    border-radius: 5px; /* Optional: Add rounded corners */
+    font-size: 12px; /* Set the desired font size */
+}
+/* AI Autotagging NOT WORKING YET*/
+.processing-row {
+    background-color: green !important;
+}
+
+.processed-row {
+    background-color: lightgreen !important;
+}
+/*****************************************/
+
+#program-messages.show {
+    display: block;
+}
+
+.search-and-audio {
+    position: fixed;
+    top: 45px; /* Adjust based on the header height */
+    left: 0;
+    right: 0;
+    background-color: #333; /* Match the background color */
+    z-index: 1000;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.toolbar {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.selected-row {
+    background-color: #d3d3d3;
+}
+
+#edit-form {
+    margin-top: 20px;
+}
+
+#edit-form .form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#edit-form label {
+    width: 30%;
+    text-align: right;
+    margin-right: 10px;
+}
+
+#edit-form input, #edit-form select {
+    width: 60%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+#apply-edit {
+    background-color: #28a745;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+}
+
+#apply-edit:hover {
+    background-color: #218838;
+}
+
+/* Menu styles */
+.settings-menu, .edit-menu, .batch-menu {
+    position: fixed;
+    top: 0;
+    right: -350px;
+    width: 350px;
+    height: 100%;
+    background-color: #333;
+    color: #fff;
+    transition: right 0.3s;
+}
+
+.settings-menu.open, .edit-menu.open, .batch-menu.open {
+    right: 0;
+}
+
+.settings-header, .edit-header, .batch-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #444;
+    height: 54px;
+}
+
+.settings-header h2, .edit-header h2, .batch-header h2 {
+    margin: 0;
+}
+
+.settings-header .close-button, .edit-header .close-edit-button, .batch-header .batch-close-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.settings-content, .edit-content, .batch-content {
+    padding: 20px;
+}
+
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-section h3 {
+    margin: 0 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #555;
+}
+
+/* Inline editor styles */
+.inline-editor {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+td.editing input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Responsive styles */
+@media only screen and (max-width: 600px) {
+    body {
+        padding: 8% 0;
+    }
+}
+
+/* Styles for highlight and editable cells */
+.dataTables_wrapper {
+    width: 100%;
+    overflow: auto;
+}
+
+.dataTables_scrollBody {
+    overflow: visible !important;
+}
+
+.editable-cell {
+    cursor: pointer;
+}
+
+.editable-cell input {
+    width: calc(100% - 10px);
+    padding: 5px;
+    margin: 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+}
+
+.highlighted {
+    background-color: #d3d3d3 !important;
+}
+
+/* Table styling for darker theme */
+table.dataTable {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #2c2c2c;
+    color: black;
+}
+
+table.dataTable th,
+table.dataTable td {
+    padding: 1px 1px; /* Adjust the padding to control the row height */
+    line-height: 0.2; /* Adjust the line-height to control the row height */
+    text-align: left;
+    border-bottom: 1px solid #444;
+    font-size: 12px; /* Set the desired font size */
+}
+
+table.dataTable th {
+    background-color: #333 !important; /* Fix header background */
+    font-weight: bold;
+    color: white !important; /* Added for better visibility */
+}
+
+table.dataTable td {
+    background-color: #444 !important; /* Darker grey for rows */
+}
+
+table.dataTable tr:nth-child(even) td {
+    color: #fff; /* Change to your desired color */
+    background-color: #595959 !important; /* Slightly lighter grey for alternate rows */
+}
+
+table.dataTable tr:nth-child(odd) td {
+    color: #fff; /* Change to your desired color */
+    background-color: #5d5d5d !important; /* Slightly lighter grey for alternate rows */
+}
+
+table.dataTable tr:hover td {
+    background-color: #007bff !important; /* Blue highlight on hover */
+}
+
+table.dataTable th:hover {
+    background-color: #333 !important; /* Fix header background on hover */
+}
+
+.dataTables_wrapper .dataTables_filter {
+    float: right;
+    color: #ddd;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    color: #ddd;
+    background-color: #444;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.dataTables_wrapper .dataTables_length {
+    float: left;
+    color: #ddd;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    color: #ddd;
+    background-color: #444;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.dataTables_wrapper .dataTables_info {
+    float: left;
+    padding: 10px 0;
+    color: #ddd;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    float: right;
+    padding: 10px 0;
+    color: #ddd;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    color: #ddd;
+    background-color: #444;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #555;
+}
+
+/* Fix header background on click */
+table.dataTable th:active {
+    background-color: #333 !important;
+}
+
+/* Prevent column highlighting */
+.dataTables_wrapper .dataTables_scrollBody {
+    overflow: visible !important;
+}
+
+table.dataTable tbody td.highlighted {
+    background-color: transparent !important;
+}
+
+/* Change the color of the sorting arrows */
+table.dataTable thead th.sorting::after,
+table.dataTable thead th.sorting_asc::after,
+table.dataTable thead th.sorting_desc::after {
+    font-family: "FontAwesome";
+    content: "\f0dc";
+    color: #007bff; /* Change to your desired color */
+    padding-left: 10px;
+}
+
+table.dataTable thead th.sorting_asc::after {
+    content: "\f0de";
+}
+
+table.dataTable thead th.sorting_desc::after {
+    content: "\f0dd";
+}
+
+/* Adjust the alignment of the sorting arrows */
+table.dataTable thead th {
+    position: relative;
+}
+
+table.dataTable thead th::after {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+/* Reset original DataTables arrows */
+table.dataTable thead th.sorting,
+table.dataTable thead th.sorting_asc,
+table.dataTable thead th.sorting_desc {
+    background-image: none !important;
+}
+
+
