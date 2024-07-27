@@ -27,7 +27,6 @@ $(document).ready(function() {
         }
     });
 
-    // main.js
     window.showMessage = function(message) {
         $('#program-messages').text(message).addClass('show');
         setTimeout(function() {
@@ -291,13 +290,13 @@ $(document).ready(function() {
             var filePath = $(this).find('.row-select').data('path');
             if (key === 'delete') {
                 var encodedFilePath = encodeURIComponent(filePath.replace(/\\/g, '/'));  // Replace backslashes with forward slashes and encode the path
-                var deleteUrl = '/deletefile.php?file=' + encodedFilePath;
+                var deleteUrl = '/deletefile?file=' + encodedFilePath;
 
                 $.ajax({
                     url: deleteUrl,
                     type: 'GET',
                     success: function(response) {
-                        if(response == 'success') {
+                        if (response.status === "success") {
                             table.row(options.$trigger).remove().draw();
                             showMessage('File deleted successfully.');
                         } else {
