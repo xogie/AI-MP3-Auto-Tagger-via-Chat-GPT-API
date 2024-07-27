@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Populate the settings form with the loaded settings
                 document.getElementById('chat-gpt-api-key').value = settings.chat_gpt_api_key;
                 document.getElementById('overwrite-existing-tags').checked = settings.overwrite_existing_tags;
-                document.getElementById('condensed-genre').checked = settings.condensed_genre;
             })
             .catch(error => showMessage('Error loading program settings: ' + error));
     }
