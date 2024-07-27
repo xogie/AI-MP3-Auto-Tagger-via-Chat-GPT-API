@@ -12,6 +12,8 @@
 
 .settings-menu.open {
     right: 0 !important;
+    border-block-color: black;
+    border: 1px solid #505050cc;
 }
 
 .settings-header {
