@@ -96,7 +96,7 @@ main {
     top: 12px; /* Adjust based on the height of the player */
     left: 50%;
     transform: translateX(-50%);
-    width: 600px; /* Set the desired width */
+    width: 800px; /* Set the desired width */
     display: none;
     z-index: 1000;
     border-radius: 5px; /* Optional: Add rounded corners */
