@@ -11,6 +11,8 @@ import io
 import logging
 logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
+import webbrowser
+import threading
 
 EasyID3.RegisterTextKey('year', 'TDRC')
 
@@ -85,9 +87,9 @@ def ai_retag_files(files):
             f"Artist: {artist}\n"
             f"Title: {title}\n"
             f"Duration: {duration_str}\n"
-            "Please provide updated metadata for this artist and title. It is very important to include the year. You should also get the album. "
-            "If you do not know any specific value, leave it blank. You should clean up the information as best as you can. "
-            "Translate any foreign languages to ENGLISH. Using propercase, unless the artist uses something different."
+            "Please provide metadata for this artist and title. It is very important to include the year. You should also get the album name. "
+            "If you do not know any specific value, leave it blank. Do not put Unknown. You should clean up the information as best as you can. "
+            "Translate any foreign languages to ENGLISH. Using propercase, unless the artist uses something different. If music is holiday, use Holiday as Genre"
             "If you do not know, you can also look up https://musicbrainz.org/taglookup/index?tag-lookup.artist=Lavern&tag-lookup.release=&tag-lookup.tracknum=&tag-lookup.track=Hold+Me&tag-lookup.duration=&tag-lookup.filename= "
             "Return the metadata as a JSON object in the format:\n"
             "{\n"
@@ -391,4 +393,10 @@ def create_json(directory):
     return mp3_files
 
 if __name__ == "__main__":
-    app.run(port=5555)
+    port = 5555
+    url = f"http://127.0.0.1:{port}"
+
+    # Start a thread to open the browser
+    threading.Timer(1.25, lambda: webbrowser.open(url)).start()
+
+    app.run(port=port)
