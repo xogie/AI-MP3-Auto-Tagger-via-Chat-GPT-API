@@ -8,19 +8,20 @@
             <div class="form-group">
                 <label for="batch-action">Batch Action:</label>
                 <select id="batch-action" name="batch_action">
-                    <option value="rename">Rename</option>
-                    <option value="retag">Retag</option>
-                    <option value="move">Move</option>
+                    <option value="DontWork">None of this works, except AI Auto Tag</option>
+                    <option value="RemoveSpace">Remove Space(s) From End _*.mp3</option>
+                    <option value="RenameMp3Ext">Rename .Mp3 or .MP3 to .mp3</option>
+                    <option value="RenameFilestoArtist">Rename Files to Artist - Title</option>
                     <!-- Add more batch actions as needed -->
                 </select>
             </div>
             <div class="form-group checkbox-group">
                 <input type="checkbox" id="apply-to-all" name="apply_to_all">
-                <label for="apply-to-all">Apply to all files</label>
+                <label for="apply-to-all">Test 1</label>
             </div>
             <div class="form-group checkbox-group">
                 <input type="checkbox" id="ignore-errors" name="ignore_errors">
-                <label for="ignore-errors">Ignore errors</label>
+                <label for="ignore-errors">Test 2</label>
             </div>
             <button type="button" id="apply-batch" class="button">Apply</button>
             <button type="button" id="ai-auto-tag" class="button">AI Auto Tag</button>
