@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var aiAutoTagButton = document.getElementById('ai-auto-tag');
-    var batchMenu = document.getElementById('batch-menu');
+    const aiAutoTagButton = document.getElementById('ai-auto-tag');
+    const batchMenu = document.getElementById('batch-menu');
 
     aiAutoTagButton.addEventListener('click', function() {
         // Close the batch menu
@@ -10,29 +10,46 @@ document.addEventListener('DOMContentLoaded', function() {
         showMessage('AI auto-tagging process started.');
 
         // Process the table for automatic retagging
-        var table = $('#mp3_table').DataTable();
-        var rowsData = table.rows().data().toArray();
+        const table = $('#mp3_table').DataTable();
+        const rowsData = table.rows().data().toArray();
 
-        var currentRow = 0;
+        const filesToTag = [];
+
+        rowsData.forEach(function(row, index) {
+            const fileData = {
+                artist: row[1],
+                title: row[2],
+                genre: row[3],
+                album: row[4],
+                year: row[5],
+                name: row[6],
+                path: table.row(index).nodes().to$().find('.row-select').data('path')
+            };
+
+            // Check if any field is missing
+            if (!fileData.artist || !fileData.title || !fileData.genre || !fileData.album || !fileData.year) {
+                filesToTag.push(fileData);
+            }
+        });
+
+        if (filesToTag.length === 0) {
+            showMessage('No files with missing metadata for auto-tagging.');
+            return;
+        }
+
+        let currentRow = 0;
 
         function tagNextRow() {
-            if (currentRow >= rowsData.length) {
+            if (currentRow >= filesToTag.length) {
                 showMessage('AI auto-tagging completed successfully.');
                 return;
             }
 
-            var row = table.row(currentRow).nodes().to$();
+            const fileData = filesToTag[currentRow];
+            const row = table.row(function(idx, data) {
+                return data[6] === fileData.name;
+            }).nodes().to$();
             row.addClass('processing-row'); // Add class to highlight row
-
-            var fileData = {
-                artist: rowsData[currentRow][1],
-                title: rowsData[currentRow][2],
-                genre: rowsData[currentRow][3],
-                album: rowsData[currentRow][4],
-                year: rowsData[currentRow][5],
-                name: rowsData[currentRow][6],
-                path: row.find('.row-select').data('path')
-            };
 
             $.ajax({
                 url: '/auto_tag',
@@ -41,8 +58,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: JSON.stringify([fileData]),
                 success: function(response) {
                     if (response.status === 'success') {
-                        var updatedFile = response.updatedData[0];
-                        table.row(currentRow).data([
+                        const updatedFile = response.updatedData[0];
+                        table.row(function(idx, data) {
+                            return data[6] === updatedFile.name;
+                        }).data([
                             '<input type="checkbox" class="row-select" data-path="' + updatedFile.path + '">',
                             updatedFile.artist,
                             updatedFile.title,
