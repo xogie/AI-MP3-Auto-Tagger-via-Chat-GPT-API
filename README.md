@@ -30,7 +30,7 @@ Each call uses a maximum of 150 input tokens. Based on this, 25,000 MP3 calls wo
 - Flask
 - Mutagen
 - OpenAI API key
-- *Install required python modules. I'll work on finishing a requirements.txt file. 
+- Install required python modules.
 
 ### Installation
 - Clone the repository:
