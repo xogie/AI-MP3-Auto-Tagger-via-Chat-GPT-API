@@ -43,15 +43,15 @@ def load_settings():
 def update_metadata(filepath, metadata):
     try:
         audiofile = EasyMP3(filepath)
-        if 'artist' in metadata:
+        if 'artist' in metadata and metadata['artist']:
             audiofile['artist'] = metadata['artist']
-        if 'title' in metadata:
+        if 'title' in metadata and metadata['title']:
             audiofile['title'] = metadata['title']
-        if 'genre' in metadata:
+        if 'genre' in metadata and metadata['genre']:
             audiofile['genre'] = metadata['genre']
-        if 'album' in metadata:
+        if 'album' in metadata and metadata['album']:
             audiofile['album'] = metadata['album']
-        if 'year' in metadata:
+        if 'year' in metadata and metadata['year']:
             audiofile['date'] = metadata['year']
         audiofile.save()
         logging.info(f"Updated metadata for file {filepath}")
@@ -85,16 +85,17 @@ def ai_retag_files(files):
             f"Artist: {artist}\n"
             f"Title: {title}\n"
             f"Duration: {duration_str}\n"
-            "Please provide updated metadata for this artist and title. It is very important to include the year and album. "
+            "Please provide updated metadata for this artist and title. It is very important to include the year. You should also get the album. "
             "If you do not know any specific value, leave it blank. You should clean up the information as best as you can. "
-            "Translate any foreign languages to ENGLISH. "
+            "Translate any foreign languages to ENGLISH. Using propercase, unless the artist uses something different."
+            "If you do not know, you can also look up https://musicbrainz.org/taglookup/index?tag-lookup.artist=Lavern&tag-lookup.release=&tag-lookup.tracknum=&tag-lookup.track=Hold+Me&tag-lookup.duration=&tag-lookup.filename= "
             "Return the metadata as a JSON object in the format:\n"
             "{\n"
             '  "artist": "example artist only",\n'
             '  "title": "example title only",\n'
-            '  "genre": "example genre only (if unknown, guess based on the artist normal style)",\n'
+            '  "genre": "example genre only (if unknown or blank, guess based on the artist normal style)",\n'
             '  "album": "example album only",\n'
-            '  "year": "example year only"\n'
+            '  "year": "example year only, do not include month and day."\n'
             "}"
         )
 
@@ -157,6 +158,7 @@ def ai_retag_files(files):
 
     logging.debug(f"Updated files: {updated_files}")
     return updated_files
+
 
 @app.route('/')
 def index():
