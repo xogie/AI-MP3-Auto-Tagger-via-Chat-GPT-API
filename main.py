@@ -8,7 +8,8 @@ from mutagen.id3 import ID3, APIC
 from select_directory import select_directory, create_json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import io
-
+import logging
+logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 
 EasyID3.RegisterTextKey('year', 'TDRC')
@@ -51,87 +52,89 @@ def ai_retag_files(files):
 
     updated_files = []
     for file in files:
-        # Only tag files if we're allowed to overwrite existing tags or if they are missing tags
-        if overwrite_existing_tags or not file['artist'] or not file['title'] or not file['genre'] or not file['album'] or not file['year']:
-            filename_without_extension = os.path.splitext(file['name'])[0]
+        # Check if there are any missing tags
+        if all(file.get(tag) for tag in ['artist', 'title', 'genre', 'album', 'year']) and not overwrite_existing_tags:
+            # If there are no missing tags and we are not overwriting, skip the AI tagging
+            updated_files.append(file)
+            continue
 
-            # Ensure filename is used as default for missing tags
-            artist = file['artist'] if file['artist'] else filename_without_extension
-            title = file['title'] if file['title'] else filename_without_extension
+        filename_without_extension = os.path.splitext(file['name'])[0]
 
-            prompt = (
-                f"Artist: {artist}\n"
-                f"Title: {title}\n"
-                "Please provide updated metadata for this artist and title. It is very important to include the year and album. "
-                "If you do not know any specific value, leave it blank. You should clean up the information as best as you can. "
-                "Translate any foreign languages to ENGLISH. "
-                "Return the metadata as a JSON object in the format:\n"
-                "{\n"
-                '  "artist": "example artist only",\n'
-                '  "title": "example title only",\n'
-                '  "genre": "example genre only (if unknown, guess based on the artist normal style)",\n'
-                '  "album": "example album only",\n'
-                '  "year": "example year only"\n'
-                "}"
+        # Ensure filename is used as default for missing tags
+        artist = file['artist'] if file['artist'] else filename_without_extension
+        title = file['title'] if file['title'] else filename_without_extension
+
+        prompt = (
+            f"Artist: {artist}\n"
+            f"Title: {title}\n"
+            "Please provide updated metadata for this artist and title. It is very important to include the year and album. "
+            "If you do not know any specific value, leave it blank. You should clean up the information as best as you can. "
+            "Translate any foreign languages to ENGLISH. "
+            "Return the metadata as a JSON object in the format:\n"
+            "{\n"
+            '  "artist": "example artist only",\n'
+            '  "title": "example title only",\n'
+            '  "genre": "example genre only (if unknown, guess based on the artist normal style)",\n'
+            '  "album": "example album only",\n'
+            '  "year": "example year only"\n'
+            "}"
+        )
+
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-4o-mini-2024-07-18",
+                messages=[
+                    {"role": "system", "content": "You are a helpful mp3 tagging assistant based on basic information."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=150
             )
 
+            response_content = response.choices[0]['message']['content'].strip()
+            print(f"Response for file {file['name']}: {response_content}")
+
+            json_start = response_content.find("{")
+            json_end = response_content.rfind("}") + 1
+            if json_start != -1 and json_end != -1:
+                json_response = response_content[json_start:json_end]
+            else:
+                raise ValueError("JSON object not found in the response")
+
+            json_response = json_response.replace(',}', '}').replace('}\n}', '}').strip()
+
             try:
-                response = openai.ChatCompletion.create(
-                    model="gpt-4o-mini-2024-07-18",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful mp3 tagging assistant based on basic information."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    max_tokens=150
-                )
+                updated_metadata = json.loads(json_response)
 
-                response_content = response.choices[0]['message']['content'].strip()
-                print(f"Response for file {file['name']}: {response_content}")
+                # If overwrite_existing_tags is False, only update missing tags
+                if not overwrite_existing_tags:
+                    if file['artist']:
+                        updated_metadata['artist'] = file['artist']
+                    if file['title']:
+                        updated_metadata['title'] = file['title']
+                    if file['genre']:
+                        updated_metadata['genre'] = file['genre']
+                    if file['album']:
+                        updated_metadata['album'] = file['album']
+                    if file['year']:
+                        updated_metadata['year'] = file['year']
 
-                json_start = response_content.find("{")
-                json_end = response_content.rfind("}") + 1
-                if json_start != -1 and json_end != -1:
-                    json_response = response_content[json_start:json_end]
-                else:
-                    raise ValueError("JSON object not found in the response")
-
-                json_response = json_response.replace(',}', '}').replace('}\n}', '}').strip()
-
-                try:
-                    updated_metadata = json.loads(json_response)
-
-                    # If overwrite_existing_tags is False, only update missing tags
-                    if not overwrite_existing_tags:
-                        if file['artist']:
-                            updated_metadata['artist'] = file['artist']
-                        if file['title']:
-                            updated_metadata['title'] = file['title']
-                        if file['genre']:
-                            updated_metadata['genre'] = file['genre']
-                        if file['album']:
-                            updated_metadata['album'] = file['album']
-                        if file['year']:
-                            updated_metadata['year'] = file['year']
-
-                    updated_file = {
-                        'artist': updated_metadata.get('artist', file['artist']),
-                        'title': updated_metadata.get('title', file['title']),
-                        'genre': updated_metadata.get('genre', file['genre']),
-                        'album': updated_metadata.get('album', file['album']),
-                        'year': updated_metadata.get('year', file['year']),
-                        'name': file['name'],
-                        'path': file['path']
-                    }
-                    updated_files.append(updated_file)
-                except json.JSONDecodeError as json_err:
-                    print(f"JSON decode error for file {file['name']}: {str(json_err)}")
-                    print(f"Raw response: {response_content}")
-                    updated_files.append(file)
-
-            except Exception as e:
-                print(f"Error retagging file {file['name']}: {str(e)}")
+                updated_file = {
+                    'artist': updated_metadata.get('artist', file['artist']),
+                    'title': updated_metadata.get('title', file['title']),
+                    'genre': updated_metadata.get('genre', file['genre']),
+                    'album': updated_metadata.get('album', file['album']),
+                    'year': updated_metadata.get('year', file['year']),
+                    'name': file['name'],
+                    'path': file['path']
+                }
+                updated_files.append(updated_file)
+            except json.JSONDecodeError as json_err:
+                print(f"JSON decode error for file {file['name']}: {str(json_err)}")
+                print(f"Raw response: {response_content}")
                 updated_files.append(file)
-        else:
+
+        except Exception as e:
+            print(f"Error retagging file {file['name']}: {str(e)}")
             updated_files.append(file)
 
     print(f"Updated files: {updated_files}")
@@ -145,17 +148,18 @@ def index():
 def auto_tag():
     try:
         files = request.json
-        print(f"Files received for auto-tagging: {json.dumps(files, indent=4)}")  # Debugging line
-
+        logging.debug(f"Files received for auto-tagging: {json.dumps(files, indent=4)}")
+        
         updated_files = ai_retag_files(files)
-        print(f"Updated files from AI retagging: {updated_files}")
-
+        logging.debug(f"Updated files from AI retagging: {json.dumps(updated_files, indent=4)}")
+        
         for updated_file in updated_files:
             update_metadata(updated_file['path'], updated_file)
-
+        
+        # Return the correctly updated data
         return jsonify({"status": "success", "updatedData": updated_files})
     except Exception as e:
-        print(f"Error in auto_tag endpoint: {str(e)}")
+        logging.error(f"Error in auto_tag endpoint: {str(e)}")
         return jsonify({"error": str(e)})
 
 @app.route('/select_directory', methods=['GET'])
@@ -177,31 +181,32 @@ def update_files():
             filepath = file['path']
             audiofile = EasyMP3(filepath)
             
+            # Update tags if provided, otherwise delete the tag
             if 'artist' in file:
                 if file['artist']:
                     audiofile['artist'] = file['artist']
                 else:
-                    audiofile.pop('artist', None)
+                    audiofile.tags.pop('artist', None)
             if 'title' in file:
                 if file['title']:
                     audiofile['title'] = file['title']
                 else:
-                    audiofile.pop('title', None)
+                    audiofile.tags.pop('title', None)
             if 'genre' in file:
                 if file['genre']:
                     audiofile['genre'] = file['genre']
                 else:
-                    audiofile.pop('genre', None)
+                    audiofile.tags.pop('genre', None)
             if 'album' in file:
                 if file['album']:
                     audiofile['album'] = file['album']
                 else:
-                    audiofile.pop('album', None)
+                    audiofile.tags.pop('album', None)
             if 'year' in file:
                 if file['year']:
                     audiofile['year'] = file['year']
                 else:
-                    audiofile.pop('year', None)
+                    audiofile.tags.pop('year', None)
 
             audiofile.save()
             print(f"Updated metadata for file {filepath}")  # Debugging line
@@ -209,8 +214,6 @@ def update_files():
     except Exception as e:
         print(f"Error updating files: {str(e)}")
         return jsonify({"error": str(e)})
-
-
 
 @app.route('/load_directory', methods=['POST'])
 def load_directory():
