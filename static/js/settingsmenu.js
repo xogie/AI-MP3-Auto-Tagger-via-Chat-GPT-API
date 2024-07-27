@@ -9,22 +9,38 @@ document.addEventListener('DOMContentLoaded', function() {
     var batchMenu = document.getElementById('batch-menu');
     var batchCloseButton = document.querySelector('.batch-close-button');
 
-    navbarToggler.addEventListener('click', function() {
-        settingsMenu.classList.toggle('open');
-        loadSettings();
-    });
+    if (navbarToggler) {
+        navbarToggler.addEventListener('click', function() {
+            if (settingsMenu) {
+                settingsMenu.classList.toggle('open');
+                loadSettings();
+            }
+        });
+    }
 
-    batchMenuIcon.addEventListener('click', function() {
-        batchMenu.classList.toggle('open');
-    });
+    if (batchMenuIcon) {
+        batchMenuIcon.addEventListener('click', function() {
+            if (batchMenu) {
+                batchMenu.classList.toggle('open');
+            }
+        });
+    }
 
-    closeButton.addEventListener('click', function() {
-        settingsMenu.classList.remove('open');
-    });
+    if (closeButton) {
+        closeButton.addEventListener('click', function() {
+            if (settingsMenu) {
+                settingsMenu.classList.remove('open');
+            }
+        });
+    }
 
-    batchCloseButton.addEventListener('click', function() {
-        batchMenu.classList.remove('open');
-    });
+    if (batchCloseButton) {
+        batchCloseButton.addEventListener('click', function() {
+            if (batchMenu) {
+                batchMenu.classList.remove('open');
+            }
+        });
+    }
 
     function showMessage(message) {
         $('#program-messages').text(message).addClass('show');
@@ -35,37 +51,49 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function loadSettings() {
         fetch('/settings')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
             .then(settings => {
                 // Populate the settings form with the loaded settings
-                document.getElementById('chat-gpt-api-key').value = settings.chat_gpt_api_key;
-                document.getElementById('overwrite-existing-tags').checked = settings.overwrite_existing_tags;
+                var apiKeyElement = document.getElementById('chat-gpt-api-key');
+                var overwriteTagsElement = document.getElementById('overwrite-existing-tags');
+
+                if (apiKeyElement) apiKeyElement.value = settings.chat_gpt_api_key;
+                if (overwriteTagsElement) overwriteTagsElement.checked = settings.overwrite_existing_tags;
             })
             .catch(error => showMessage('Error loading program settings: ' + error));
     }
 
-    document.getElementById('save-settings').addEventListener('click', function() {
-        var settings = {
-            chat_gpt_api_key: document.getElementById('chat-gpt-api-key').value,
-            overwrite_existing_tags: document.getElementById('overwrite-existing-tags').checked,
-            condensed_genre: document.getElementById('condensed-genre').checked
-        };
-        fetch('/settings', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(settings)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                showMessage('Program settings saved successfully.');
-                settingsMenu.classList.remove('open');
-            } else {
-                showMessage('Error saving program settings: ' + data.error);
-            }
-        })
-        .catch(error => showMessage('Error saving program settings: ' + error));
-    });
+    var saveSettingsButton = document.getElementById('save-settings');
+    if (saveSettingsButton) {
+        saveSettingsButton.addEventListener('click', function() {
+            var settings = {
+                chat_gpt_api_key: document.getElementById('chat-gpt-api-key') ? document.getElementById('chat-gpt-api-key').value : '',
+                overwrite_existing_tags: document.getElementById('overwrite-existing-tags') ? document.getElementById('overwrite-existing-tags').checked : false
+            };
+            fetch('/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showMessage('Program settings saved successfully.');
+                    if (settingsMenu) {
+                        settingsMenu.classList.remove('open');
+                    }
+                } else {
+                    showMessage('Error saving program settings: ' + data.error);
+                }
+            })
+            .catch(error => showMessage('Error saving program settings: ' + error));
+        });
+    }
 });

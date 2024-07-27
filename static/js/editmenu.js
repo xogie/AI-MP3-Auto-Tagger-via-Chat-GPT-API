@@ -10,27 +10,31 @@ $(document).ready(function() {
         var filesToUpdate = [];
 
         selectedRows.each(function(value, index) {
-            var checkbox = $($('#mp3_table').DataTable().row(index).node()).find('.row-select');
+            var rowNode = $('#mp3_table').DataTable().row(index).node();
+            var checkbox = $(rowNode).find('.row-select');
             var filePath = checkbox.data('path');
-
-            if (artist) value[0] = artist;
-            if (title) value[1] = title;
-            if (genre) value[2] = genre;
-            if (album) value[3] = album;
-            if (year) value[4] = year;
 
             filesToUpdate.push({
                 path: filePath,
                 name: value[6],
-                artist: value[0],
-                title: value[1],
-                genre: value[2],
-                album: value[3],
-                year: value[4]
+                artist: artist || value[0],
+                title: title || value[1],
+                genre: genre || value[2],
+                album: album || value[3],
+                year: year || value[4]
             });
+
+            value[0] = '<input type="checkbox" class="row-select" data-path="' + filePath + '">';
+            value[1] = artist || value[1];
+            value[2] = title || value[2];
+            value[3] = genre || value[3];
+            value[4] = album || value[4];
+            value[5] = year || value[5];
         });
 
         $('#mp3_table').DataTable().rows('.selected-row').invalidate().draw(false);
+
+        console.log("Data to be sent for update:", JSON.stringify(filesToUpdate, null, 2)); // Debugging line
 
         $.ajax({
             url: '/update_files',
@@ -53,7 +57,7 @@ $(document).ready(function() {
         $('#edit-album').val(toProperCase($('#edit-album').val()));
         $('#edit-title').val(toProperCase($('#edit-title').val()));
 
-        $('#mp3_table').DataTable().rows('.selected-row').data().each(function(value) {
+        $('#mp3_table').DataTable().rows('.selected-row').data().each(function(value, index) {
             value[0] = toProperCase(value[0]);
             value[1] = toProperCase(value[1]);
             value[2] = toProperCase(value[2]);
@@ -64,7 +68,7 @@ $(document).ready(function() {
     });
 
     $('#propercase-filename').on('click', function() {
-        $('#mp3_table').DataTable().rows('.selected-row').data().each(function(value) {
+        $('#mp3_table').DataTable().rows('.selected-row').data().each(function(value, index) {
             var newFileName = toProperCase(value[6]);
             value[6] = newFileName;
         });
@@ -75,7 +79,8 @@ $(document).ready(function() {
         var filesToUpdate = [];
 
         $('#mp3_table').DataTable().rows('.selected-row').data().each(function(value, index) {
-            var checkbox = $($('#mp3_table').DataTable().row(index).node()).find('.row-select');
+            var rowNode = $('#mp3_table').DataTable().row(index).node();
+            var checkbox = $(rowNode).find('.row-select');
             var filePath = checkbox.data('path');
             var newFileName = value[0] + ' - ' + value[1] + '.mp3';
             value[6] = newFileName;
@@ -89,6 +94,8 @@ $(document).ready(function() {
                 album: value[3],
                 year: value[4]
             });
+
+            value[0] = '<input type="checkbox" class="row-select" data-path="' + filePath + '">';
         });
 
         $('#mp3_table').DataTable().rows('.selected-row').invalidate().draw(false);

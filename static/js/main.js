@@ -140,26 +140,20 @@ $(document).ready(function() {
             var rowNode = table.row(index).node();
             var filePath = $(rowNode).find('.row-select').data('path');
 
-            if (artist) value[1] = artist;
-            if (title) value[2] = title;
-            if (genre) value[3] = genre;
-            if (album) value[4] = album;
-            if (year) value[5] = year;
-
             filesToUpdate.push({
                 path: filePath,
                 name: value[6],
-                artist: value[1] || '',
-                title: value[2] || '',
-                genre: value[3] || '',
-                album: value[4] || '',
-                year: value[5] || ''
+                artist: artist,
+                title: title,
+                genre: genre,
+                album: album,
+                year: year
             });
         });
 
         table.rows('.selected-row').invalidate().draw(false);
 
-        console.log("Data to be sent for update:", filesToUpdate);
+        console.log("Data to be sent for update:", JSON.stringify(filesToUpdate, null, 2)); // Debugging line
 
         $.ajax({
             url: '/update_files',
@@ -167,7 +161,9 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: JSON.stringify(filesToUpdate),
             success: function(response) {
+                console.log("Update response:", response); // Debugging line
                 showMessage('Files updated successfully.');
+                $('#edit-menu').removeClass('open');
             },
             error: function() {
                 showMessage('An error occurred while updating files.');
@@ -252,6 +248,23 @@ $(document).ready(function() {
             audioPlayer.load();
             audioPlayer.play();
             showMessage('Playing: ' + artist + ' - ' + title);
+
+            // Retrieve and display album art
+            $.ajax({
+                url: '/get_album_art',
+                type: 'GET',
+                data: { file_path: filePath },
+                success: function(response) {
+                    if (response) {
+                        var img = document.getElementById('album-art');
+                        img.src = 'data:image/jpeg;base64,' + btoa(response);
+                        img.style.display = 'block';
+                    }
+                },
+                error: function() {
+                    showMessage('An error occurred while retrieving album art.');
+                }
+            });
         }
     });
 
@@ -275,6 +288,7 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: JSON.stringify([fileData]),
             success: function(response) {
+                console.log("File updated response:", response);
                 showMessage('File updated successfully.');
             },
             error: function() {
@@ -330,26 +344,43 @@ document.addEventListener('DOMContentLoaded', function() {
         var table = $('#mp3_table').DataTable();
         var rowsData = table.rows().data().toArray();
 
+        var filesToTag = [];
+
+        rowsData.forEach(function(row, index) {
+            var fileData = {
+                artist: row[1],
+                title: row[2],
+                genre: row[3],
+                album: row[4],
+                year: row[5],
+                name: row[6],
+                path: table.row(index).nodes().to$().find('.row-select').data('path')
+            };
+
+            // Check if any field is missing
+            if (!fileData.artist || !fileData.title || !fileData.genre || !fileData.album || !fileData.year) {
+                filesToTag.push(fileData);
+            }
+        });
+
+        if (filesToTag.length === 0) {
+            showMessage('No files with missing metadata for auto-tagging.');
+            return;
+        }
+
         var currentRow = 0;
 
         function tagNextRow() {
-            if (currentRow >= rowsData.length) {
+            if (currentRow >= filesToTag.length) {
                 showMessage('AI auto-tagging completed successfully.');
                 return;
             }
 
-            var row = table.row(currentRow).nodes().to$();
+            var fileData = filesToTag[currentRow];
+            var row = table.row(function(idx, data, node) {
+                return data[6] === fileData.name;
+            }).nodes().to$();
             row.addClass('processing-row'); // Add class to highlight row
-
-            var fileData = {
-                artist: rowsData[currentRow][1],
-                title: rowsData[currentRow][2],
-                genre: rowsData[currentRow][3],
-                album: rowsData[currentRow][4],
-                year: rowsData[currentRow][5],
-                name: rowsData[currentRow][6],
-                path: row.find('.row-select').data('path')
-            };
 
             $.ajax({
                 url: '/auto_tag',
