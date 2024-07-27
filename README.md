@@ -48,6 +48,7 @@ Configure your settings:
     Open the settings and enter your OpenAI API key.
 
 Running the Application
+- pip install -r requirements.txt
 - python main.py
 
 Open your browser and navigate to:
