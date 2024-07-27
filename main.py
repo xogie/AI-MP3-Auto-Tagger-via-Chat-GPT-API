@@ -19,6 +19,14 @@ progress_message = ""
 
 settings_file = 'settings.json'
 
+def get_file_duration(filepath):
+    try:
+        audio = MP3(filepath)
+        return int(audio.info.length)  # Duration in seconds
+    except Exception as e:
+        logging.error(f"Error getting duration for file {filepath}: {str(e)}")
+        return None
+
 def load_settings():
     if os.path.exists(settings_file):
         with open(settings_file, 'r', encoding='utf-8') as f:
@@ -35,15 +43,20 @@ def load_settings():
 def update_metadata(filepath, metadata):
     try:
         audiofile = EasyMP3(filepath)
-        audiofile['artist'] = metadata['artist']
-        audiofile['title'] = metadata['title']
-        audiofile['genre'] = metadata['genre']
-        audiofile['album'] = metadata['album']
-        audiofile['year'] = metadata['year']
+        if 'artist' in metadata:
+            audiofile['artist'] = metadata['artist']
+        if 'title' in metadata:
+            audiofile['title'] = metadata['title']
+        if 'genre' in metadata:
+            audiofile['genre'] = metadata['genre']
+        if 'album' in metadata:
+            audiofile['album'] = metadata['album']
+        if 'year' in metadata:
+            audiofile['date'] = metadata['year']
         audiofile.save()
-        print(f"Updated metadata for file {filepath}")
+        logging.info(f"Updated metadata for file {filepath}")
     except Exception as e:
-        print(f"Error updating metadata for file {filepath}: {str(e)}")
+        logging.error(f"Error updating metadata for file {filepath}: {str(e)}")
 
 def ai_retag_files(files):
     settings = load_settings()
@@ -64,9 +77,14 @@ def ai_retag_files(files):
         artist = file['artist'] if file['artist'] else filename_without_extension
         title = file['title'] if file['title'] else filename_without_extension
 
+        # Get the duration of the file
+        duration = get_file_duration(file['path'])
+        duration_str = f"{duration // 60}:{duration % 60:02d}" if duration is not None else "unknown duration"
+
         prompt = (
             f"Artist: {artist}\n"
             f"Title: {title}\n"
+            f"Duration: {duration_str}\n"
             "Please provide updated metadata for this artist and title. It is very important to include the year and album. "
             "If you do not know any specific value, leave it blank. You should clean up the information as best as you can. "
             "Translate any foreign languages to ENGLISH. "
@@ -82,16 +100,16 @@ def ai_retag_files(files):
 
         try:
             response = openai.ChatCompletion.create(
-                model="gpt-4o-mini-2024-07-18",
+                model="gpt-4o-mini",
                 messages=[
-                    {"role": "system", "content": "You are a helpful mp3 tagging assistant based on basic information."},
+                    {"role": "system", "content": "You are a helpful mp3 tagging assistant."},
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=150
             )
 
             response_content = response.choices[0]['message']['content'].strip()
-            print(f"Response for file {file['name']}: {response_content}")
+            logging.debug(f"Response for file {file['name']}: {response_content}")
 
             json_start = response_content.find("{")
             json_end = response_content.rfind("}") + 1
@@ -129,15 +147,15 @@ def ai_retag_files(files):
                 }
                 updated_files.append(updated_file)
             except json.JSONDecodeError as json_err:
-                print(f"JSON decode error for file {file['name']}: {str(json_err)}")
-                print(f"Raw response: {response_content}")
+                logging.error(f"JSON decode error for file {file['name']}: {str(json_err)}")
+                logging.debug(f"Raw response: {response_content}")
                 updated_files.append(file)
 
         except Exception as e:
-            print(f"Error retagging file {file['name']}: {str(e)}")
+            logging.error(f"Error retagging file {file['name']}: {str(e)}")
             updated_files.append(file)
 
-    print(f"Updated files: {updated_files}")
+    logging.debug(f"Updated files: {updated_files}")
     return updated_files
 
 @app.route('/')
@@ -176,7 +194,7 @@ def select_directory_endpoint():
 def update_files():
     try:
         files = request.json
-        print(f"Received files for update: {json.dumps(files, indent=4)}")  # Debugging line
+        logging.debug(f"Received files for update: {json.dumps(files, indent=4)}")  # Debugging line
         for file in files:
             filepath = file['path']
             audiofile = EasyMP3(filepath)
@@ -204,15 +222,15 @@ def update_files():
                     audiofile.tags.pop('album', None)
             if 'year' in file:
                 if file['year']:
-                    audiofile['year'] = file['year']
+                    audiofile['date'] = file['year']
                 else:
-                    audiofile.tags.pop('year', None)
+                    audiofile.tags.pop('date', None)
 
             audiofile.save()
-            print(f"Updated metadata for file {filepath}")  # Debugging line
+            logging.info(f"Updated metadata for file {filepath}")  # Debugging line
         return jsonify({"status": "success"})
     except Exception as e:
-        print(f"Error updating files: {str(e)}")
+        logging.error(f"Error updating files: {str(e)}")
         return jsonify({"error": str(e)})
 
 @app.route('/load_directory', methods=['POST'])
@@ -236,19 +254,19 @@ def load_directory():
 @app.route('/get_album_art', methods=['GET'])
 def get_album_art():
     file_path = request.args.get('file_path')
-    print(f"Retrieving album art for: {file_path}")
+    logging.debug(f"Retrieving album art for: {file_path}")
     audio = MP3(file_path, ID3=ID3)
     if audio.tags:
         for tag in audio.tags.values():
             if isinstance(tag, APIC):
-                print(f"Album art found for: {file_path}")
+                logging.info(f"Album art found for: {file_path}")
                 return send_file(
                     io.BytesIO(tag.data),
                     mimetype=tag.mime,
                     as_attachment=False,
                     download_name='album_art.jpg'
                 )
-    print(f"No album art found for: {file_path}")
+    logging.info(f"No album art found for: {file_path}")
     return '', 404
 
 @app.route('/progress', methods=['GET'])
@@ -280,7 +298,7 @@ def get_metadata(filepath):
             'title': audiofile.tags.get('title', [''])[0],
             'genre': audiofile.tags.get('genre', [''])[0],
             'album': audiofile.tags.get('album', [''])[0],
-            'year': audiofile.tags.get('year', [''])[0] if 'year' in audiofile.tags else ''
+            'year': audiofile.tags.get('date', [''])[0] if 'date' in audiofile.tags else ''
         }
     else:
         metadata = {
@@ -361,7 +379,7 @@ def create_json(directory):
             result = future.result()
             if result:
                 mp3_files.append(result)
-                print(f"Processed file: {result}")  # Debugging line
+                logging.debug(f"Processed file: {result}")  # Debugging line
 
     with open('mp3_data.json', 'w', encoding='utf-8') as f:
         json.dump(mp3_files, f, indent=4)
