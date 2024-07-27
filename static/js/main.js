@@ -327,23 +327,14 @@ $(document).ready(function() {
             "delete": {name: "Delete", icon: "delete"}
         }
     });
-});
 
-document.addEventListener('DOMContentLoaded', function() {
-    var aiAutoTagButton = document.getElementById('ai-auto-tag');
-    var batchMenu = document.getElementById('batch-menu');
-
-    aiAutoTagButton.addEventListener('click', function() {
-        // Close the batch menu
-        batchMenu.classList.remove('open');
-
+    // AI Auto-Tagging
+    $('#ai-auto-tag').on('click', function() {
         // Show message that tagging process has started
         showMessage('AI auto-tagging process started.');
 
         // Process the table for automatic retagging
-        var table = $('#mp3_table').DataTable();
         var rowsData = table.rows().data().toArray();
-
         var filesToTag = [];
 
         rowsData.forEach(function(row, index) {
@@ -368,29 +359,20 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        var currentRow = 0;
+        $.ajax({
+            url: '/auto_tag',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(filesToTag),
+            success: function(response) {
+                if (response.status === 'success') {
+                    var updatedFiles = response.updatedData;
+                    updatedFiles.forEach(function(updatedFile) {
+                        var rowIndex = table.rows().indexes().filter(function(index) {
+                            return table.row(index).data()[6] === updatedFile.name;
+                        })[0];
 
-        function tagNextRow() {
-            if (currentRow >= filesToTag.length) {
-                showMessage('AI auto-tagging completed successfully.');
-                return;
-            }
-
-            var fileData = filesToTag[currentRow];
-            var row = table.row(function(idx, data, node) {
-                return data[6] === fileData.name;
-            }).nodes().to$();
-            row.addClass('processing-row'); // Add class to highlight row
-
-            $.ajax({
-                url: '/auto_tag',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify([fileData]),
-                success: function(response) {
-                    if (response.status === 'success') {
-                        var updatedFile = response.updatedData[0];
-                        table.row(currentRow).data([
+                        table.row(rowIndex).data([
                             '<input type="checkbox" class="row-select" data-path="' + updatedFile.path + '">',
                             updatedFile.artist,
                             updatedFile.title,
@@ -399,26 +381,15 @@ document.addEventListener('DOMContentLoaded', function() {
                             updatedFile.year,
                             updatedFile.name
                         ]).draw(false);
-                        showMessage('Processed: ' + updatedFile.name);
-
-                        row.removeClass('processing-row'); // Remove highlight class
-                        row.addClass('processed-row'); // Optionally, add another class for processed row
-                    } else {
-                        showMessage('Error during AI auto-tagging: ' + response.error);
-                        row.removeClass('processing-row'); // Remove highlight class in case of error
-                    }
-                    currentRow++;
-                    tagNextRow();
-                },
-                error: function() {
-                    showMessage('An error occurred during AI auto-tagging.');
-                    row.removeClass('processing-row'); // Remove highlight class in case of error
-                    currentRow++;
-                    tagNextRow();
+                    });
+                    showMessage('AI auto-tagging completed successfully.');
+                } else {
+                    showMessage('Error during AI auto-tagging: ' + response.error);
                 }
-            });
-        }
-
-        tagNextRow();
+            },
+            error: function() {
+                showMessage('An error occurred during AI auto-tagging.');
+            }
+        });
     });
 });
