@@ -1,5 +1,4 @@
 {
     "chat_gpt_api_key": "Add your Chat GBT API Key here",
     "overwrite_existing_tags": true,
-    "condensed_genre": false
 }
