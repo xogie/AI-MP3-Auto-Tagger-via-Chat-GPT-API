@@ -68,9 +68,12 @@ def create_json(directory):
                         showMessage(f'Loading {count} files...')
         
         for future in as_completed(futures):
-            mp3_files.append(future.result())
+            result = future.result()
+            if result:
+                mp3_files.append(result)
+                print(f"Processed file: {result}")  # Debugging line
     
-    with open('mp3_data.json', 'w') as f:
+    with open('mp3_data.json', 'w', encoding='utf-8') as f:
         json.dump(mp3_files, f, indent=4)
     
     showMessage('All files loaded successfully.')
