@@ -395,8 +395,6 @@ def create_json(directory):
 if __name__ == "__main__":
     port = 5555
     url = f"http://127.0.0.1:{port}"
-
     # Start a thread to open the browser
-    threading.Timer(1.25, lambda: webbrowser.open(url)).start()
-
+    threading.Timer(0.50, lambda: webbrowser.open(url)).start()
     app.run(port=port)
