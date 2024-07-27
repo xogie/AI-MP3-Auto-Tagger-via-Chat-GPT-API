@@ -7,6 +7,7 @@ from mutagen.mp3 import EasyMP3, MP3
 from mutagen.id3 import ID3, APIC
 from select_directory import select_directory, create_json
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import io
 
 app = Flask(__name__)
 
@@ -19,7 +20,7 @@ settings_file = 'settings.json'
 
 def load_settings():
     if os.path.exists(settings_file):
-        with open(settings_file, 'r') as f:
+        with open(settings_file, 'r', encoding='utf-8') as f:
             return json.load(f)
     else:
         default_settings = {
@@ -27,7 +28,7 @@ def load_settings():
             'overwrite_existing_tags': False,
             'condensed_genre': False
         }
-        with open(settings_file, 'w') as f:
+        with open(settings_file, 'w', encoding='utf-8') as f:
             json.dump(default_settings, f, indent=4)
         return default_settings
 
@@ -40,7 +41,7 @@ def update_metadata(filepath, metadata):
         audiofile['album'] = metadata['album']
         audiofile['year'] = metadata['year']
         audiofile.save()
-        print(f"Updated metadata for file {filepath}")
+        #print(f"Updated metadata for file {filepath}")
     except Exception as e:
         print(f"Error updating metadata for file {filepath}: {str(e)}")
 
@@ -108,15 +109,15 @@ def ai_retag_files(files):
                 }
                 updated_files.append(updated_file)
             except json.JSONDecodeError as json_err:
-                print(f"JSON decode error for file {file['name']}: {str(json_err)}")
-                print(f"Raw response: {response_content}")
+                #print(f"JSON decode error for file {file['name']}: {str(json_err)}")
+                #print(f"Raw response: {response_content}")
                 updated_files.append(file)
 
         except Exception as e:
-            print(f"Error retagging file {file['name']}: {str(e)}")
+            #print(f"Error retagging file {file['name']}: {str(e)}")
             updated_files.append(file)
 
-    print(f"Updated files: {updated_files}")
+    #print(f"Updated files: {updated_files}")
     return updated_files
 
 @app.route('/')
@@ -127,10 +128,10 @@ def index():
 def auto_tag():
     try:
         files = request.json
-        print(f"Files received for auto-tagging: {files}")
+        #print(f"Files received for auto-tagging: {files}")
 
         updated_files = ai_retag_files(files)
-        print(f"Updated files from AI retagging: {updated_files}")
+        #print(f"Updated files from AI retagging: {updated_files}")
 
         for updated_file in updated_files:
             update_metadata(updated_file['path'], updated_file)
@@ -192,14 +193,15 @@ def load_directory():
 def get_album_art():
     file_path = request.args.get('file_path')
     audio = MP3(file_path, ID3=ID3)
-    for tag in audio.tags.values():
-        if isinstance(tag, APIC):
-            return send_file(
-                io.BytesIO(tag.data),
-                mimetype=tag.mime,
-                as_attachment=False,
-                download_name='album_art.jpg'
-            )
+    if audio.tags:
+        for tag in audio.tags.values():
+            if isinstance(tag, APIC):
+                return send_file(
+                    io.BytesIO(tag.data),
+                    mimetype=tag.mime,
+                    as_attachment=False,
+                    download_name='album_art.jpg'
+                )
     return '', 404
 
 @app.route('/progress', methods=['GET'])
@@ -215,7 +217,7 @@ def handle_settings():
     elif request.method == 'POST':
         try:
             settings = request.json
-            with open(settings_file, 'w') as f:
+            with open(settings_file, 'w', encoding='utf-8') as f:
                 json.dump(settings, f, indent=4)
             return jsonify({"status": "success"})
         except Exception as e:
@@ -273,6 +275,18 @@ def process_file(file_path):
             'name': os.path.basename(file_path),
             'path': file_path
         }
+    
+@app.route('/deletefile', methods=['GET'])
+def delete_file():
+    file_path = request.args.get('file')
+    try:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            return jsonify({"status": "success"})
+        else:
+            return jsonify({"status": "error", "message": "File does not exist"}), 404
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 def create_json(directory):
     global progress, progress_message
@@ -299,7 +313,7 @@ def create_json(directory):
         for future in as_completed(futures):
             mp3_files.append(future.result())
 
-    with open('mp3_data.json', 'w') as f:
+    with open('mp3_data.json', 'w', encoding='utf-8') as f:
         json.dump(mp3_files, f, indent=4)
 
     progress_message = 'All files loaded successfully.'
