@@ -25,8 +25,7 @@ def load_settings():
     else:
         default_settings = {
             'chat_gpt_api_key': '',
-            'overwrite_existing_tags': False,
-            'condensed_genre': False
+            'overwrite_existing_tags': False
         }
         with open(settings_file, 'w', encoding='utf-8') as f:
             json.dump(default_settings, f, indent=4)
@@ -85,7 +84,7 @@ def ai_retag_files(files):
             )
 
             response_content = response.choices[0]['message']['content'].strip()
-            print(f"Response for file {file['name']}: {response_content}")
+            #print(f"Response for file {file['name']}: {response_content}")
 
             json_start = response_content.find("{")
             json_end = response_content.rfind("}") + 1
