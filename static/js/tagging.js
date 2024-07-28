@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const aiAutoTagButton = document.getElementById('ai-auto-tag');
-    const batchMenu = document.getElementById('batch-menu');
+    var aiAutoTagButton = document.getElementById('ai-auto-tag');
+    var batchMenu = document.getElementById('batch-menu');
 
     aiAutoTagButton.addEventListener('click', function() {
         // Close the batch menu
@@ -10,13 +10,13 @@ document.addEventListener('DOMContentLoaded', function() {
         showMessage('AI auto-tagging process started.');
 
         // Process the table for automatic retagging
-        const table = $('#mp3_table').DataTable();
-        const rowsData = table.rows().data().toArray();
+        var table = $('#mp3_table').DataTable();
+        var rowsData = table.rows().data().toArray();
 
-        const filesToTag = [];
+        var filesToTag = [];
 
         rowsData.forEach(function(row, index) {
-            const fileData = {
+            var fileData = {
                 artist: row[1],
                 title: row[2],
                 genre: row[3],
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        let currentRow = 0;
+        var currentRow = 0;
 
         function tagNextRow() {
             if (currentRow >= filesToTag.length) {
@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const fileData = filesToTag[currentRow];
-            const row = table.row(function(idx, data) {
+            var fileData = filesToTag[currentRow];
+            var row = table.row(function(idx, data, node) {
                 return data[6] === fileData.name;
             }).nodes().to$();
             row.addClass('processing-row'); // Add class to highlight row
@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: JSON.stringify([fileData]),
                 success: function(response) {
                     if (response.status === 'success') {
-                        const updatedFile = response.updatedData[0];
-                        table.row(function(idx, data) {
+                        var updatedFile = response.updatedData[0];
+                        table.row(function(idx, data, node) {
                             return data[6] === updatedFile.name;
                         }).data([
                             '<input type="checkbox" class="row-select" data-path="' + updatedFile.path + '">',
