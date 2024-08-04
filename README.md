@@ -54,6 +54,7 @@ Running the Application
 
 Open your browser and navigate to:
 - http://127.0.0.1:5555
+- It should do this automatically
 
 ### Usage
 - Selecting a Directory
